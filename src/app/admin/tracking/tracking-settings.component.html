@@ -1,0 +1,89 @@
+
+<div class="max-w-5xl mx-auto animate-fade-in">
+  <!-- Header -->
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+    <div>
+      <h2 class="text-2xl font-bold text-navy-900">Rastreamento / Pixels</h2>
+      <p class="text-slate-500">Gerencie múltiplos scripts de rastreamento (Meta Pixel, Google Tag, etc.)</p>
+    </div>
+    <button (click)="addNewScript()" class="bg-navy-900 text-white px-6 py-3 rounded-xl font-bold flex items-center gap-2 hover:bg-slate-800 transition-all shadow-lg shadow-navy-900/20">
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
+      Adicionar Novo Script
+    </button>
+  </div>
+
+  <!-- Scripts List -->
+  <div class="grid grid-cols-1 gap-6">
+    @for (script of trackingService.scripts(); track script.id) {
+      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden transition-all hover:shadow-md">
+        <div class="p-6">
+          <div class="flex flex-col md:flex-row gap-6">
+            <!-- Form -->
+            <div class="flex-grow space-y-4">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Nome do Script</label>
+                  <input 
+                    type="text" 
+                    [(ngModel)]="script.name" 
+                    placeholder="Ex: Meta Pixel"
+                    class="w-full px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
+                  >
+                </div>
+                <div class="flex items-end pb-1">
+                  <label class="relative inline-flex items-center cursor-pointer group">
+                    <input type="checkbox" [(ngModel)]="script.active" (change)="toggleActive(script)" class="sr-only peer">
+                    <div class="w-11 h-6 bg-slate-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                    <span class="ml-3 text-sm font-bold text-slate-600 group-hover:text-navy-900 transition-colors">
+                      {{ script.active ? 'Ativo' : 'Inativo' }}
+                    </span>
+                  </label>
+                </div>
+                <div class="flex items-end pb-1">
+                  <div class="text-xs font-bold">
+                    Status no DOM: 
+                    <span *ngIf="isScriptActive(script.id)" class="text-green-600">🟢 Injetado</span>
+                    <span *ngIf="!isScriptActive(script.id)" class="text-red-600">🔴 Não Injetado</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-1">Código do Script</label>
+                <textarea 
+                  [(ngModel)]="script.code" 
+                  placeholder="Cole aqui o código <script>...</script>"
+                  class="w-full h-32 px-4 py-3 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all font-mono text-xs"
+                ></textarea>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex md:flex-col gap-2 justify-end md:justify-start md:w-32">
+              <button (click)="saveScript(script)" class="flex-1 bg-blue-50 text-blue-700 hover:bg-blue-100 px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/></svg>
+                Salvar
+              </button>
+              <div *ngIf="saveSuccess[script.id]" class="text-[10px] text-green-600 font-bold text-center animate-bounce">
+                Salvo com sucesso!
+              </div>
+              <button (click)="deleteScript(script.id)" class="flex-1 bg-red-50 text-red-600 hover:bg-red-100 px-4 py-2 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                Excluir
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    } @empty {
+      <div class="bg-white rounded-2xl p-12 text-center border-2 border-dashed border-slate-200">
+        <div class="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <svg class="w-8 h-8 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4m-4 4l4 4M6 16l-4-4 4-4m14 4l4-4-4-4"/></svg>
+        </div>
+        <h3 class="text-lg font-bold text-navy-900 mb-1">Nenhum script configurado</h3>
+        <p class="text-slate-500 mb-6">Adicione Pixels ou Tags para rastrear o desempenho do seu site.</p>
+        <button (click)="addNewScript()" class="text-blue-600 font-bold hover:underline">Adicionar meu primeiro script</button>
+      </div>
+    }
+  </div>
+</div>
