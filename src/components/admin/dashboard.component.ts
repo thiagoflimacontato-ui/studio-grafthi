@@ -1,5 +1,5 @@
 
-import { Component, inject, signal, computed, ChangeDetectorRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, inject, signal, computed, ChangeDetectorRef, ViewChild, ElementRef, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, Validators, FormGroup, FormsModule, FormArray } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
@@ -1653,6 +1653,53 @@ export class DashboardComponent {
       instagramUrl: [settings.instagramUrl],
       tiktokUrl: [settings.tiktokUrl],
       pinterestUrl: [settings.pinterestUrl]
+    });
+
+    // Reactivity for Settings
+    effect(() => {
+      const s = this.db.settings();
+      
+      // Patch non-array values
+      this.settingsForm.patchValue({
+        bannerTitle: s.bannerTitle,
+        bannerSubtitle: s.bannerSubtitle,
+        bannerImageUrl: s.bannerImageUrl,
+        logoUrl: s.logoUrl,
+        logoType: s.logoType,
+        logoText: s.logoText,
+        headerBackgroundColor: s.headerBackgroundColor,
+        primaryColor: s.primaryColor,
+        secondaryColor: s.secondaryColor,
+        journeyHighlightColor: s.journeyHighlightColor,
+        metaTitle: s.metaTitle,
+        metaDescription: s.metaDescription,
+        contactPhone: s.contactPhone,
+        contactEmail: s.contactEmail,
+        contactFormContent: s.contactFormContent,
+        companyName: s.companyName,
+        facebookUrl: s.facebookUrl,
+        instagramUrl: s.instagramUrl,
+        tiktokUrl: s.tiktokUrl,
+        pinterestUrl: s.pinterestUrl
+      }, { emitEvent: false });
+
+      // Rebuild arrays if they differ in length or on first load
+      if (s.featureCards && s.featureCards.length !== this.featureCardsArray.length) {
+        this.featureCardsArray.clear({ emitEvent: false });
+        s.featureCards.forEach(c => this.featureCardsArray.push(this.createFeatureCardGroup(c), { emitEvent: false }));
+      } else if (s.featureCards) {
+        // Just patch if lengths match
+        this.featureCardsArray.patchValue(s.featureCards, { emitEvent: false });
+      }
+
+      if (s.journeySteps && s.journeySteps.length !== this.journeyStepsArray.length) {
+        this.journeyStepsArray.clear({ emitEvent: false });
+        s.journeySteps.forEach(js => this.journeyStepsArray.push(this.createJourneyStepGroup(js), { emitEvent: false }));
+      } else if (s.journeySteps) {
+        this.journeyStepsArray.patchValue(s.journeySteps, { emitEvent: false });
+      }
+
+      this.cdr.detectChanges();
     });
   }
 

@@ -56,9 +56,7 @@ export class DbService {
   }
 
   async addCategory(category: Category) {
-    // Generate UUID if it doesn't look like one, else let DB generate or use provided
-    const newCategory = { name: category.name };
-    const { data, error } = await this.supabase.from('categories').insert([newCategory]).select();
+    const { data, error } = await this.supabase.from('categories').insert([{ name: category.name }]).select();
     if (!error && data) {
       this.categories.update(list => [...list, data[0] as Category]);
     } else {
@@ -88,19 +86,19 @@ export class DbService {
       const mapped = data.map((p: any) => ({
         id: p.id,
         type: p.type,
-        categoryId: p.category_id,
+        categoryId: p.categoryId,
         title: p.title,
         description: p.description,
-        imageUrl: p.image_url,
-        productionTime: p.production_time,
+        imageUrl: p.imageUrl,
+        productionTime: p.productionTime,
         size: p.size,
-        printType: p.print_type,
+        printType: p.printType,
         paper: p.paper,
         finishing: p.finishing,
-        basePrice: p.base_price,
-        pricingGrid: p.pricing_grid,
+        basePrice: p.basePrice,
+        pricingGrid: p.pricingGrid,
         items: p.items,
-        variableItems: p.variable_items
+        variableItems: p.variableItems
       })) as Product[];
       this.products.set(mapped);
     }
@@ -109,19 +107,19 @@ export class DbService {
   async addProduct(product: Product) {
     const dbPayload = {
       type: product.type,
-      category_id: product.categoryId,
+      categoryId: product.categoryId,
       title: product.title,
       description: product.description,
-      image_url: product.imageUrl,
-      production_time: product.productionTime,
+      imageUrl: product.imageUrl,
+      productionTime: product.productionTime,
       size: product.size,
-      print_type: product.printType,
+      printType: product.printType,
       paper: product.paper,
       finishing: product.finishing,
-      base_price: product.basePrice,
-      pricing_grid: product.pricingGrid,
+      basePrice: product.basePrice,
+      pricingGrid: product.pricingGrid,
       items: product.items,
-      variable_items: product.variableItems
+      variableItems: product.variableItems
     };
     
     const { data, error } = await this.supabase.from('products').insert([dbPayload]).select();
@@ -135,19 +133,19 @@ export class DbService {
   async updateProduct(product: Product) {
     const dbPayload = {
       type: product.type,
-      category_id: product.categoryId,
+      categoryId: product.categoryId,
       title: product.title,
       description: product.description,
-      image_url: product.imageUrl,
-      production_time: product.productionTime,
+      imageUrl: product.imageUrl,
+      productionTime: product.productionTime,
       size: product.size,
-      print_type: product.printType,
+      printType: product.printType,
       paper: product.paper,
       finishing: product.finishing,
-      base_price: product.basePrice,
-      pricing_grid: product.pricingGrid,
+      basePrice: product.basePrice,
+      pricingGrid: product.pricingGrid,
       items: product.items,
-      variable_items: product.variableItems
+      variableItems: product.variableItems
     };
 
     const { error } = await this.supabase.from('products').update(dbPayload).eq('id', product.id);
@@ -165,7 +163,7 @@ export class DbService {
 
   // --- Leads ---
   async fetchLeads() {
-    const { data, error } = await this.supabase.from('leads').select('*').order('created_at', { ascending: false });
+    const { data, error } = await this.supabase.from('leads').select('*').order('createdAt', { ascending: false });
     if (!error && data) {
       const mapped = data.map((l: any) => ({
         id: l.id,
@@ -184,12 +182,11 @@ export class DbService {
 
   async addLead(lead: Lead) {
     const dbPayload = {
-      // Intentionally letting DB generate ID and createdAt
       name: lead.name,
       email: lead.email,
       whatsapp: lead.whatsapp,
-      product_interest: lead.productInterest,
-      config_summary: lead.configSummary,
+      productInterest: lead.productInterest,
+      configSummary: lead.configSummary,
       value: lead.value,
       status: lead.status || 'Novo'
     };
@@ -197,6 +194,8 @@ export class DbService {
     const { data, error } = await this.supabase.from('leads').insert([dbPayload]).select();
     if (!error && data) {
       await this.fetchLeads();
+    } else {
+      console.error('Error adding lead', error);
     }
   }
 
