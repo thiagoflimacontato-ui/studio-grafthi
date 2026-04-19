@@ -45,7 +45,8 @@ export class DbService {
       this.fetchProducts(),
       this.fetchLeads(),
       this.fetchPages(),
-      this.fetchSettings()
+      this.fetchSettings(),
+      this.fetchEvents()
     ]);
   }
 
@@ -341,13 +342,64 @@ export class DbService {
     }
   }
 
-  // --- Analytics (Local only for now to avoid DB overload) ---
-  addEvent(event: AnalyticsEvent) {
-    this.events.update(list => [...list, event]);
-    // Optional: Only save to local storage or implement batch sending to Supabase
+  // --- Analytics ---
+  async fetchEvents() {
+    const { data, error } = await this.supabase
+      .from('events')
+      .select('*')
+      .order('timestamp', { ascending: false })
+      .limit(5000); // Limit to last 5k events for performance
+    
+    if (!error && data) {
+      const mapped = data.map((e: any) => ({
+        id: e.id,
+        type: e.type,
+        timestamp: e.timestamp,
+        path: e.path,
+        visitorId: e.visitorId,
+        sessionId: e.session_id,
+        referrer: e.referrer,
+        userAgent: e.user_agent,
+        device: e.device,
+        os: e.os,
+        browser: e.browser,
+        location: e.location,
+        metadata: e.metadata
+      })) as AnalyticsEvent[];
+      this.events.set(mapped);
+    }
   }
 
-  clearEvents() {
-    this.events.set([]);
+  async addEvent(event: AnalyticsEvent) {
+    // Add to local state for immediate feedback
+    this.events.update(list => [event, ...list]);
+
+    // Persist to Supabase
+    const dbPayload = {
+      type: event.type,
+      timestamp: event.timestamp,
+      path: event.path,
+      visitorId: event.visitorId,
+      session_id: event.sessionId,
+      referrer: event.referrer,
+      user_agent: event.userAgent,
+      device: event.device,
+      os: event.os,
+      browser: event.browser,
+      location: event.location,
+      metadata: event.metadata
+    };
+
+    const { error } = await this.supabase.from('events').insert([dbPayload]);
+    if (error) {
+      console.error('Error persisting event', error);
+    }
+  }
+
+  async clearEvents() {
+    const { error } = await this.supabase.from('events').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+    if (!error) {
+      this.events.set([]);
+    }
   }
 }

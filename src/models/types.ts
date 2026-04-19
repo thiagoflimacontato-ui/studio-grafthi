@@ -145,16 +145,28 @@ export enum AnalyticsEventType {
 }
 
 export interface AnalyticsEvent {
-  id: string;
+  id?: string;
   type: AnalyticsEventType;
   timestamp: string;
   path: string;
   visitorId: string;
+  sessionId?: string;
+  referrer?: string;
+  userAgent?: string;
+  device?: string;
+  os?: string;
+  browser?: string;
+  location?: {
+    city?: string;
+    country?: string;
+    region?: string;
+  };
   metadata?: {
     productId?: string;
     productTitle?: string;
     buttonName?: string;
     label?: string;
+    url?: string;
     [key: string]: any;
   };
 }
