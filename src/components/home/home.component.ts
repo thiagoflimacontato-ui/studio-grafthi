@@ -14,20 +14,65 @@ import { DirectContactFormComponent } from './direct-contact-form.component';
   imports: [RouterLink, CommonModule, NgOptimizedImage, ProductModalComponent, DirectContactFormComponent],
   template: `
     <!-- Hero Banner -->
-    <section class="relative bg-navy-900 min-h-[500px] md:h-[550px] flex items-center overflow-hidden">
-      <div class="absolute inset-0 z-0 opacity-30">
-         <img [ngSrc]="db.settings().bannerImageUrl" fill priority [alt]="db.settings().bannerTitle + ' - ' + db.settings().companyName" class="object-cover">
+    <section class="relative min-h-[500px] md:h-[550px] flex items-center overflow-hidden"
+             [style.backgroundColor]="db.settings().bannerBackgroundColor || '#0f172a'">
+      
+      <!-- Background Image -->
+      <div class="absolute inset-0 z-0">
+          @if (db.settings().bannerImageUrl) {
+            <img [ngSrc]="db.settings().bannerImageUrl" fill priority [alt]="db.settings().bannerTitle + ' - ' + db.settings().companyName" class="object-cover">
+          }
       </div>
-      <div class="container mx-auto px-6 py-12 md:px-4 relative z-10 text-center md:text-left">
-        <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold text-white mb-4 md:mb-6 leading-tight max-w-4xl drop-shadow-lg">
+
+      <!-- Combined Overlay (Dynamic) -->
+      @if (db.settings().bannerOverlayActive) {
+          <div class="absolute inset-0 z-1" 
+               [style.backgroundColor]="db.settings().bannerOverlayColor || '#000000'"
+               [style.opacity]="db.settings().bannerOverlayOpacity || 0.3"></div>
+      }
+
+      <div class="container mx-auto px-6 py-12 md:px-4 relative z-10"
+           [class.text-left]="db.settings().bannerAlignment === 'left'"
+           [class.text-center]="db.settings().bannerAlignment === 'center'"
+           [class.text-right]="db.settings().bannerAlignment === 'right'">
+        
+        <h1 class="text-3xl sm:text-4xl md:text-6xl font-bold mb-4 md:mb-6 leading-tight max-w-4xl drop-shadow-lg"
+            [style.color]="db.settings().bannerTextColor || '#ffffff'">
           {{ db.settings().bannerTitle }}
         </h1>
-        <p class="text-lg md:text-xl text-slate-100 mb-8 max-w-2xl leading-relaxed drop-shadow-md mx-auto md:mx-0">
+        
+        <p class="text-lg md:text-xl mb-4 max-w-2xl leading-relaxed drop-shadow-md mx-auto"
+           [class.md:mx-0]="db.settings().bannerAlignment === 'left'"
+           [class.md:mx-auto]="db.settings().bannerAlignment === 'center'"
+           [class.md:ml-auto]="db.settings().bannerAlignment === 'right'"
+           [style.color]="db.settings().bannerTextColor || '#ffffff'"
+           style="opacity: 0.95">
           {{ db.settings().bannerSubtitle }}
         </p>
-        <div class="flex flex-col md:flex-row gap-4 justify-center md:justify-start">
-          <a routerLink="/catalogo" (click)="tracking.trackClick('Ver Produtos', 'Hero Banner')" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-4 px-10 rounded-full shadow-lg transform transition hover:scale-105 text-lg w-full md:w-auto">
-            Ver Produtos
+
+        @if (db.settings().bannerDescription) {
+          <p class="text-base md:text-lg mb-8 max-w-xl leading-relaxed opacity-80"
+             [class.mx-auto]="db.settings().bannerAlignment === 'center'"
+             [class.ml-auto]="db.settings().bannerAlignment === 'right'"
+             [style.color]="db.settings().bannerTextColor || '#ffffff'">
+            {{ db.settings().bannerDescription }}
+          </p>
+        }
+
+        <div class="flex flex-col md:flex-row gap-4"
+             [class.justify-start]="db.settings().bannerAlignment === 'left'"
+             [class.justify-center]="db.settings().bannerAlignment === 'center'"
+             [class.justify-end]="db.settings().bannerAlignment === 'right'">
+          
+          <a [routerLink]="db.settings().bannerButtonLink || '/catalogo'" 
+             (click)="tracking.trackClick(db.settings().bannerButtonText || 'Ver Produtos', 'Hero Banner')" 
+             class="font-bold py-4 px-10 rounded-full shadow-lg transform transition hover:scale-105 text-lg w-full md:w-auto text-center"
+             [class.bg-orange-500]="db.settings().bannerButtonStyle === 'primary'"
+             [class.hover:bg-orange-600]="db.settings().bannerButtonStyle === 'primary'"
+             [class.bg-navy-900]="db.settings().bannerButtonStyle === 'secondary'"
+             [class.hover:bg-navy-800]="db.settings().bannerButtonStyle === 'secondary'"
+             [class.text-white]="true">
+            {{ db.settings().bannerButtonText || 'Ver Produtos' }}
           </a>
         </div>
       </div>

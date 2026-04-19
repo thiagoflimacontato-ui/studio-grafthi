@@ -1261,38 +1261,151 @@ const FINISH_OPTIONS = [
                      </section>
 
                      <!-- 3. Banner Home -->
-                     <section class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/60">
-                         <h3 class="font-bold text-lg text-navy-900 mb-6 flex items-center gap-2 pb-2 border-b border-slate-100">
-                             <span class="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-base">🖼️</span>
-                             Banner da Home
-                         </h3>
-                         <div class="space-y-5">
-                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Título Principal</label>
-                                    <input formControlName="bannerTitle" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none font-bold text-lg">
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Subtítulo</label>
-                                    <textarea formControlName="bannerSubtitle" rows="1" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none resize-none"></textarea>
-                                </div>
-                             </div>
-                             
-                             <div>
-                                 <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">URL da Imagem de Fundo</label>
-                                 <input formControlName="bannerImageUrl" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none text-sm font-mono text-slate-600 bg-slate-50">
-                             </div>
+                      <section class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/60">
+                          <h3 class="font-bold text-lg text-navy-900 mb-6 flex items-center gap-2 pb-2 border-b border-slate-100">
+                              <span class="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center text-base">🖼️</span>
+                              Banner da Home
+                          </h3>
+                          <div class="space-y-6">
+                              <!-- Text Content -->
+                              <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                 <div class="md:col-span-2">
+                                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Título Principal</label>
+                                     <input formControlName="bannerTitle" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none font-bold text-lg">
+                                 </div>
+                                 <div class="md:col-span-2">
+                                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Subtítulo</label>
+                                     <input formControlName="bannerSubtitle" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none">
+                                 </div>
+                                 <div class="md:col-span-2">
+                                     <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Descrição (Texto Menor)</label>
+                                     <textarea formControlName="bannerDescription" rows="2" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none resize-none" placeholder="Texto adicional abaixo do subtítulo..."></textarea>
+                                 </div>
+                              </div>
 
-                             @if(settingsForm.get('bannerImageUrl')?.value) {
-                                <div class="relative h-40 w-full rounded-lg overflow-hidden border border-slate-200">
-                                    <img [src]="settingsForm.get('bannerImageUrl')?.value" class="w-full h-full object-cover opacity-80">
-                                    <div class="absolute inset-0 flex items-center justify-center bg-black/30">
-                                        <span class="text-white text-xs font-bold bg-black/50 px-3 py-1 rounded-full">Preview do Banner</span>
-                                    </div>
-                                </div>
-                             }
-                         </div>
-                     </section>
+                              <hr class="border-slate-100">
+
+                              <!-- Style & Alignment -->
+                              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                  <div>
+                                      <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Alinhamento</label>
+                                      <select formControlName="bannerAlignment" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none bg-white">
+                                          <option value="left">Esquerda</option>
+                                          <option value="center">Centro</option>
+                                          <option value="right">Direita</option>
+                                      </select>
+                                  </div>
+                                  <div>
+                                      <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Cor do Texto</label>
+                                      <div class="flex items-center gap-2">
+                                          <input type="color" formControlName="bannerTextColor" class="w-10 h-10 border-0 p-0 cursor-pointer rounded overflow-hidden">
+                                          <span class="text-xs font-mono text-slate-500">{{ settingsForm.get('bannerTextColor')?.value }}</span>
+                                      </div>
+                                  </div>
+                                  <div>
+                                      <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Cor de Fundo (Banner)</label>
+                                      <div class="flex items-center gap-2">
+                                          <input type="color" formControlName="bannerBackgroundColor" class="w-10 h-10 border-0 p-0 cursor-pointer rounded overflow-hidden">
+                                          <span class="text-xs font-mono text-slate-500">{{ settingsForm.get('bannerBackgroundColor')?.value }}</span>
+                                      </div>
+                                  </div>
+                              </div>
+
+                              <hr class="border-slate-100">
+
+                              <!-- Background Image & Overlay -->
+                              <div class="space-y-4">
+                                  <div>
+                                      <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">URL da Imagem de Fundo</label>
+                                      <input formControlName="bannerImageUrl" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none text-sm font-mono text-slate-600 bg-slate-50">
+                                  </div>
+
+                                  <div class="bg-slate-50 p-4 rounded-xl border border-slate-200">
+                                      <div class="flex items-center justify-between mb-4">
+                                          <label class="flex items-center gap-2 cursor-pointer">
+                                              <input type="checkbox" formControlName="bannerOverlayActive" class="w-4 h-4 rounded border-slate-300 text-navy-900 focus:ring-navy-900">
+                                              <span class="text-xs font-bold text-slate-700 uppercase leading-none">Ativar Overlay (Escurecimento)</span>
+                                          </label>
+                                      </div>
+                                      @if (settingsForm.get('bannerOverlayActive')?.value) {
+                                          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                              <div>
+                                                  <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Cor do Overlay</label>
+                                                  <div class="flex items-center gap-2">
+                                                      <input type="color" formControlName="bannerOverlayColor" class="w-8 h-8 border-0 p-0 cursor-pointer rounded overflow-hidden">
+                                                      <span class="text-xs font-mono text-slate-500">{{ settingsForm.get('bannerOverlayColor')?.value }}</span>
+                                                  </div>
+                                              </div>
+                                              <div>
+                                                  <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Opacidade ({{ (settingsForm.get('bannerOverlayOpacity')?.value * 100).toFixed(0) }}%)</label>
+                                                  <input type="range" formControlName="bannerOverlayOpacity" min="0" max="1" step="0.1" class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-navy-900">
+                                              </div>
+                                          </div>
+                                      }
+                                  </div>
+                              </div>
+
+                              <hr class="border-slate-100">
+
+                              <!-- Button Config -->
+                              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                  <div>
+                                      <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Texto do Botão</label>
+                                      <input formControlName="bannerButtonText" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none" placeholder="Ex: Ver Produtos">
+                                  </div>
+                                  <div>
+                                      <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Link do Botão</label>
+                                      <input formControlName="bannerButtonLink" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none" placeholder="Ex: /catalogo">
+                                  </div>
+                                  <div>
+                                      <label class="block text-xs font-bold text-slate-500 uppercase mb-1.5">Estilo do Botão</label>
+                                      <select formControlName="bannerButtonStyle" class="w-full border border-slate-300 rounded-lg p-3 focus:ring-2 focus:ring-navy-900 outline-none bg-white">
+                                          <option value="primary">Primário (Laranja)</option>
+                                          <option value="secondary">Secundário (Azul/Transparente)</option>
+                                      </select>
+                                  </div>
+                              </div>
+
+                              @if(settingsForm.get('bannerImageUrl')?.value) {
+                                 <div class="relative min-h-[160px] md:h-48 w-full rounded-xl overflow-hidden border border-slate-200 shadow-inner group">
+                                     <img [src]="settingsForm.get('bannerImageUrl')?.value" class="w-full h-full object-cover">
+                                     
+                                     <!-- Dynamic Overlay Preview -->
+                                     @if (settingsForm.get('bannerOverlayActive')?.value) {
+                                         <div class="absolute inset-0 z-1" 
+                                              [style.backgroundColor]="settingsForm.get('bannerOverlayColor')?.value"
+                                              [style.opacity]="settingsForm.get('bannerOverlayOpacity')?.value"></div>
+                                     }
+
+                                     <div class="absolute inset-0 z-10 flex flex-col p-6 pointer-events-none"
+                                          [class.items-start]="settingsForm.get('bannerAlignment')?.value === 'left'"
+                                          [class.items-center]="settingsForm.get('bannerAlignment')?.value === 'center'"
+                                          [class.items-end]="settingsForm.get('bannerAlignment')?.value === 'right'"
+                                          [class.text-left]="settingsForm.get('bannerAlignment')?.value === 'left'"
+                                          [class.text-center]="settingsForm.get('bannerAlignment')?.value === 'center'"
+                                          [class.text-right]="settingsForm.get('bannerAlignment')?.value === 'right'">
+                                         
+                                         <h4 class="font-bold text-sm mb-1 drop-shadow-sm" [style.color]="settingsForm.get('bannerTextColor')?.value">
+                                            {{ settingsForm.get('bannerTitle')?.value || 'Título do Banner' }}
+                                         </h4>
+                                         <p class="text-[10px] opacity-90 leading-tight max-w-[250px]" [style.color]="settingsForm.get('bannerTextColor')?.value">
+                                            {{ settingsForm.get('bannerSubtitle')?.value || 'Subtítulo...' }}
+                                         </p>
+                                         <div class="mt-4 px-3 py-1.5 rounded-full text-[9px] font-bold shadow-sm"
+                                              [class.bg-orange-500]="settingsForm.get('bannerButtonStyle')?.value === 'primary'"
+                                              [class.text-white]="settingsForm.get('bannerButtonStyle')?.value === 'primary'"
+                                              [class.bg-navy-900]="settingsForm.get('bannerButtonStyle')?.value === 'secondary'"
+                                              [class.text-white]="settingsForm.get('bannerButtonStyle')?.value === 'secondary'">
+                                              {{ settingsForm.get('bannerButtonText')?.value || 'Botão' }}
+                                         </div>
+                                     </div>
+                                     <div class="absolute top-3 right-3 z-20">
+                                         <span class="text-white text-[9px] font-bold bg-black/50 px-2.5 py-1 rounded-full backdrop-blur-sm">Preview Real-time</span>
+                                     </div>
+                                 </div>
+                              }
+                          </div>
+                      </section>
 
                      <!-- 4. Redes Sociais -->
                      <section class="bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-slate-200/60">
@@ -1633,7 +1746,17 @@ export class DashboardComponent {
     this.settingsForm = this.fb.group({
       bannerTitle: [settings.bannerTitle],
       bannerSubtitle: [settings.bannerSubtitle],
+      bannerDescription: [settings.bannerDescription || ''],
       bannerImageUrl: [settings.bannerImageUrl],
+      bannerTextColor: [settings.bannerTextColor || '#ffffff'],
+      bannerBackgroundColor: [settings.bannerBackgroundColor || '#0f172a'],
+      bannerAlignment: [settings.bannerAlignment || 'left'],
+      bannerButtonText: [settings.bannerButtonText || 'Ver Produtos'],
+      bannerButtonLink: [settings.bannerButtonLink || '/catalogo'],
+      bannerButtonStyle: [settings.bannerButtonStyle || 'primary'],
+      bannerOverlayActive: [settings.bannerOverlayActive ?? true],
+      bannerOverlayColor: [settings.bannerOverlayColor || '#000000'],
+      bannerOverlayOpacity: [settings.bannerOverlayOpacity || 0.3],
       logoUrl: [settings.logoUrl || ''],
       logoType: [settings.logoType || 'text'],
       logoText: [settings.logoText || ''],
@@ -1663,7 +1786,17 @@ export class DashboardComponent {
       this.settingsForm.patchValue({
         bannerTitle: s.bannerTitle,
         bannerSubtitle: s.bannerSubtitle,
+        bannerDescription: s.bannerDescription,
         bannerImageUrl: s.bannerImageUrl,
+        bannerTextColor: s.bannerTextColor,
+        bannerBackgroundColor: s.bannerBackgroundColor,
+        bannerAlignment: s.bannerAlignment,
+        bannerButtonText: s.bannerButtonText,
+        bannerButtonLink: s.bannerButtonLink,
+        bannerButtonStyle: s.bannerButtonStyle,
+        bannerOverlayActive: s.bannerOverlayActive,
+        bannerOverlayColor: s.bannerOverlayColor,
+        bannerOverlayOpacity: s.bannerOverlayOpacity,
         logoUrl: s.logoUrl,
         logoType: s.logoType,
         logoText: s.logoText,

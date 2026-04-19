@@ -103,7 +103,17 @@ export interface JourneyStep {
 export interface SiteSettings {
   bannerTitle: string;
   bannerSubtitle: string;
+  bannerDescription?: string;
   bannerImageUrl: string;
+  bannerTextColor?: string;
+  bannerBackgroundColor?: string;
+  bannerAlignment?: 'left' | 'center' | 'right';
+  bannerButtonText?: string;
+  bannerButtonLink?: string;
+  bannerButtonStyle?: 'primary' | 'secondary';
+  bannerOverlayActive?: boolean;
+  bannerOverlayColor?: string;
+  bannerOverlayOpacity?: number;
   logoUrl?: string;
   logoType?: 'image' | 'text';
   logoText?: string;
