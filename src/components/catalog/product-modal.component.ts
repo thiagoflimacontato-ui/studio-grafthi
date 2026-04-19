@@ -271,7 +271,7 @@ export class ProductModalComponent {
     }
 
     const qty = this.selectedQty();
-    if (!p.pricingGrid || qty === 0) {
+    if (!p.pricingGrid || !Array.isArray(p.pricingGrid) || qty === 0 || p.pricingGrid.length === 0) {
       return 0;
     }
     const tier = p.pricingGrid.find(t => t.qty === qty);
@@ -308,65 +308,72 @@ export class ProductModalComponent {
 
   submitLead() {
     if (this.leadForm.valid) {
-      const p = this.product();
-      this.tracking.trackWhatsAppClick(p.id, p.title);
+      try {
+        const p = this.product();
+        if (!p) return;
 
-      // Sanitize WhatsApp number (keep only digits)
-      const rawWhatsapp = this.leadForm.get('whatsapp')?.value || '';
-      const sanitizedWhatsapp = rawWhatsapp.replace(/\D/g, '');
+        this.tracking.trackWhatsAppClick(p.id, p.title);
 
-      // 1. WhatsApp Redirect Logic
-      let phone = this.db.settings().contactPhone?.replace(/\D/g, '') || '';
-      
-      if (!phone) {
-        alert('Erro de Configuração: O número de WhatsApp de atendimento não foi definido no painel administrativo.');
-        return;
-      }
-      // Auto-append Brazil Country Code (55)
-      if (phone.length <= 11 && !phone.startsWith('55')) {
-          phone = '55' + phone;
-      }
+        // Sanitize WhatsApp number (keep only digits)
+        const rawWhatsapp = this.leadForm.get('whatsapp')?.value || '';
+        const sanitizedWhatsapp = rawWhatsapp.replace(/\D/g, '');
 
-      // Build summary of specs to attach to lead
-      const finalPrice = this.currentPrice();
-      const qtyText = p.type === 'variable_kit' ? 'Kit Personalizado' : `${this.selectedQty()} un.`;
-      const configSummary = `${p.title} | ${qtyText} | R$ ${finalPrice.toFixed(2)}`;
-
-      const lead: Lead = {
-        id: crypto.randomUUID(),
-        ...this.leadForm.value,
-        whatsapp: sanitizedWhatsapp, // Save sanitized version
-        productInterest: p.title,
-        configSummary: configSummary,
-        value: finalPrice, // Saving numeric value for BI
-        status: 'Novo',
-        createdAt: new Date().toISOString()
-      };
-
-      // Save to DB
-      this.db.addLead(lead);
-
-      // Show success feedback
-      this.showSuccess.set(true);
-
-      // Build technical details for WhatsApp
-      let techDetails = '';
-      if (p.type === 'simple_batch' || p.type === 'fixed_kit') {
-        techDetails = `\n*Detalhes Técnicos:*\nTamanho: ${p.size || 'N/A'}\nImpressão: ${p.printType || 'N/A'}\nPapel: ${p.paper || 'N/A'}\nAcabamento: ${p.finishing || 'N/A'}`;
+        // 1. WhatsApp Redirect Logic
+        let phone = this.db.settings().contactPhone?.replace(/\D/g, '') || '';
         
-        if (p.type === 'fixed_kit' && p.items) {
-          techDetails += `\n\n*Itens do Kit:*\n${p.items.map(i => `- ${i.productName} (${i.size})`).join('\n')}`;
+        if (!phone) {
+          alert('Erro de Configuração: O número de WhatsApp de atendimento não foi definido no painel administrativo.');
+          return;
         }
-      } else if (p.type === 'variable_kit' && p.variableItems) {
-        techDetails = `\n*Itens do Combo:*\n${p.variableItems.map(i => `- ${i.title} (${i.size || ''})`).join('\n')}`;
-      }
+        // Auto-append Brazil Country Code (55)
+        if (phone.length <= 11 && !phone.startsWith('55')) {
+            phone = '55' + phone;
+        }
 
-      // Redirect to WhatsApp after a short delay to show success message
-      setTimeout(() => {
-        const msg = encodeURIComponent(`Olá! Gostaria de encomendar: ${configSummary}. ${techDetails}\n\nMeu nome é ${lead.name}.`);
-        window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
-        this.close.emit();
-      }, 2000);
+        // Build summary of specs to attach to lead
+        const finalPrice = this.currentPrice() || 0;
+        const qtyText = p.type === 'variable_kit' ? 'Kit Personalizado' : `${this.selectedQty()} un.`;
+        const configSummary = `${p.title} | ${qtyText} | R$ ${finalPrice.toFixed(2)}`;
+
+        const lead: Lead = {
+          id: crypto.randomUUID(),
+          ...this.leadForm.value,
+          whatsapp: sanitizedWhatsapp, // Save sanitized version
+          productInterest: p.title,
+          configSummary: configSummary,
+          value: finalPrice, // Saving numeric value for BI
+          status: 'Novo',
+          createdAt: new Date().toISOString()
+        };
+
+        // Save to DB
+        this.db.addLead(lead);
+
+        // Show success feedback
+        this.showSuccess.set(true);
+
+        // Build technical details for WhatsApp
+        let techDetails = '';
+        if (p.type === 'simple_batch' || p.type === 'fixed_kit') {
+          techDetails = `\n*Detalhes Técnicos:*\nTamanho: ${p.size || 'N/A'}\nImpressão: ${p.printType || 'N/A'}\nPapel: ${p.paper || 'N/A'}\nAcabamento: ${p.finishing || 'N/A'}`;
+          
+          if (p.type === 'fixed_kit' && p.items && Array.isArray(p.items)) {
+            techDetails += `\n\n*Itens do Kit:*\n${p.items.map(i => `- ${i.productName} (${i.size})`).join('\n')}`;
+          }
+        } else if (p.type === 'variable_kit' && p.variableItems && Array.isArray(p.variableItems)) {
+          techDetails = `\n*Itens do Combo:*\n${p.variableItems.map(i => `- ${i.title} (${i.size || ''})`).join('\n')}`;
+        }
+
+        // Redirect to WhatsApp after a short delay to show success message
+        setTimeout(() => {
+          const msg = encodeURIComponent(`Olá! Gostaria de encomendar: ${configSummary}. ${techDetails}\n\nMeu nome é ${lead.name}.`);
+          window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
+          this.close.emit();
+        }, 2000);
+      } catch (err) {
+        console.error('Error submitting lead:', err);
+        alert('Ocorreu um erro ao processar seu pedido. Por favor, tente novamente ou entre em contato diretamente.');
+      }
     }
   }
 }

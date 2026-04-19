@@ -1891,14 +1891,14 @@ export class DashboardComponent {
           printType: form.printType,
           paper: form.paper,
           finishing: form.finishing,
-          pricingGrid: form.pricingGrid,
+          pricingGrid: form.pricingGrid || [],
           
           // Fixed Kit
-          items: form.items,
+          items: form.items || [],
           
           // Variable Kit
           basePrice: form.basePrice,
-          variableItems: form.variableItems,
+          variableItems: form.variableItems || [],
 
           // Legacy compatibility
           paperTypes: form.paperTypes ? (typeof form.paperTypes === 'string' ? form.paperTypes.split(',').map((s:string) => s.trim()) : form.paperTypes) : [],

@@ -96,9 +96,9 @@ export class DbService {
         paper: p.paper,
         finishing: p.finishing,
         basePrice: p.basePrice,
-        pricingGrid: p.pricingGrid,
-        items: p.items,
-        variableItems: p.variableItems
+        pricingGrid: p.pricingGrid || [],
+        items: p.items || [],
+        variableItems: p.variableItems || []
       })) as Product[];
       this.products.set(mapped);
     }
@@ -170,11 +170,11 @@ export class DbService {
         name: l.name,
         email: l.email,
         whatsapp: l.whatsapp,
-        productInterest: l.product_interest,
-        configSummary: l.config_summary,
+        productInterest: l.productInterest,
+        configSummary: l.configSummary,
         value: l.value,
         status: l.status as LeadStatus,
-        createdAt: l.created_at
+        createdAt: l.createdAt
       })) as Lead[];
       this.leads.set(mapped);
     }
