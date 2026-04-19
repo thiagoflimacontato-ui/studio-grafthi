@@ -306,7 +306,7 @@ export class ProductModalComponent {
     this.selectedQty.set(qty);
   }
 
-  submitLead() {
+  async submitLead() {
     if (this.leadForm.valid) {
       try {
         const p = this.product();
