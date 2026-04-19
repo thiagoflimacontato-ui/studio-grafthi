@@ -347,7 +347,7 @@ export class ProductModalComponent {
         };
 
         // Save to DB
-        this.db.addLead(lead);
+        await this.db.addLead(lead);
 
         // Show success feedback
         this.showSuccess.set(true);
@@ -370,9 +370,10 @@ export class ProductModalComponent {
           window.open(`https://wa.me/${phone}?text=${msg}`, '_blank');
           this.close.emit();
         }, 2000);
-      } catch (err) {
+      } catch (err: any) {
         console.error('Error submitting lead:', err);
-        alert('Ocorreu um erro ao processar seu pedido. Por favor, tente novamente ou entre em contato diretamente.');
+        const errorMsg = err.message || 'Erro desconhecido';
+        alert(`Ocorreu um erro ao processar seu pedido.\n\nDetalhe técnico: ${errorMsg}\n\nPor favor, tente novamente ou entre em contato diretamente.`);
       }
     }
   }

@@ -196,6 +196,7 @@ export class DbService {
       await this.fetchLeads();
     } else {
       console.error('Error adding lead', error);
+      throw new Error(error?.message || 'Falha ao salvar lead no banco de dados');
     }
   }
 
