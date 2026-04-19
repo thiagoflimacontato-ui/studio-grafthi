@@ -331,7 +331,7 @@ export class ProductModalComponent {
         }
 
         // Build summary of specs to attach to lead
-        const finalPrice = this.currentPrice() || 0;
+        const finalPrice = Number(this.currentPrice() || 0);
         const qtyText = p.type === 'variable_kit' ? 'Kit Personalizado' : `${this.selectedQty()} un.`;
         const configSummary = `${p.title} | ${qtyText} | R$ ${finalPrice.toFixed(2)}`;
 

@@ -95,8 +95,8 @@ export class DbService {
         printType: p.printType,
         paper: p.paper,
         finishing: p.finishing,
-        basePrice: p.basePrice,
-        pricingGrid: p.pricingGrid || [],
+        basePrice: p.basePrice ? Number(p.basePrice) : 0,
+        pricingGrid: (p.pricingGrid || []).map((t: any) => ({ qty: Number(t.qty), price: Number(t.price) })),
         items: p.items || [],
         variableItems: p.variableItems || []
       })) as Product[];
