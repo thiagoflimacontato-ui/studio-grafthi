@@ -6,6 +6,7 @@ import { provideRouter, withHashLocation, withInMemoryScrolling } from '@angular
 import { AppComponent } from './src/app.component';
 import { routes } from './src/app.routes';
 import { APP_BASE_HREF } from '@angular/common';
+import { inject } from '@vercel/analytics';
 
 // Fix: Detect blob/preview environment to prevent History API errors
 // In production (Vercel), this is false, enabling clean URLs for SEO.
@@ -27,5 +28,8 @@ bootstrapApplication(AppComponent, {
     }
   ]
 }).catch(err => console.error(err));
+
+// Initialize Vercel Web Analytics
+inject();
 
 // AI Studio always uses an `index.tsx` file for all project types.
