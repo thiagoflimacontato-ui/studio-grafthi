@@ -6,12 +6,16 @@ import { provideRouter, withHashLocation, withInMemoryScrolling } from '@angular
 import { AppComponent } from './src/app.component';
 import { routes } from './src/app.routes';
 import { APP_BASE_HREF } from '@angular/common';
+import { injectSpeedInsights } from '@vercel/speed-insights';
 
 // Fix: Detect blob/preview environment to prevent History API errors
 // In production (Vercel), this is false, enabling clean URLs for SEO.
 // In preview (Blob), this is true, using Hash to prevent crashes.
 const isBlob = window.location.protocol === 'blob:';
 const useHash = isBlob || window.location.protocol === 'file:';
+
+// Initialize Vercel Speed Insights
+injectSpeedInsights();
 
 bootstrapApplication(AppComponent, {
   providers: [
